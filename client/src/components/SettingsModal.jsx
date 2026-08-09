@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Settings, Cpu, Activity, FileText, Sparkles, DownloadCloud } from 'lucide-react';
 
 export default function SettingsModal({
@@ -7,6 +7,15 @@ export default function SettingsModal({
   handleActivateModel,
   handleDownloadModel
 }) {
+  useEffect(() => {
+    // Auto-activate first ASR model if none active
+    const asrModels = modelsStatus?.asr || [];
+    const anyActive = asrModels.some(m => m.active);
+    if (!anyActive && asrModels.length > 0) {
+      const firstModel = asrModels[0];
+      handleActivateModel('asr', firstModel.id);
+    }
+  }, [modelsStatus, handleActivateModel]);
   return (
     <div className="settings-panel glass-panel">
       <h1 className="settings-title title">

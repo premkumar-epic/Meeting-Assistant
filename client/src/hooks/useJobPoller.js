@@ -54,3 +54,5 @@ export function useJobPoller(apiUrl) {
 
   return { isPolling, status, progress, startPolling, clearPoller };
 }
+
+export default useJobPoller;
