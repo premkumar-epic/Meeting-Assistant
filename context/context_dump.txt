@@ -1,0 +1,604 @@
+
+=========================================
+FILE: AI-powered meeting assistant-phase1report.docx
+=========================================
+
+CHAPTER 1
+INTRODUCTION
+OVERVIEW
+In the contemporary corporate and academic ecosystem, professional meetings, focus groups, and collaborative technical briefings serve as the primary conduits for strategic decision-making and knowledge dissemination. However, the manual documentation of these sessions—traditionally captured through human minute-taking—is fundamentally inefficient, prone to subjective cognitive biases, and highly susceptible to information attrition. Critical action items are frequently omitted, technical context is routinely diluted, and significant billable hours are consumed in the retrospective generation of compliance-ready meeting minutes. The evolution of deep learning paradigms across Automatic Speech Recognition (ASR) and Natural Language Processing (NLP) offers a transformative vector to address these operational vulnerabilities. By transitions from manual notation to an automated, end-to-end framework, organizations can capture, process, and structure conversational audio into immutable, high-fidelity organizational knowledge.
+BACKGROUND
+The architectural evolution of automated meeting intelligence has historically been constrained by the limitations of shallow parsing models and classic acoustic signal processing pipelines. Early iterations of transcription software relied heavily on localized Hidden Markov Models (HMMs) combined with Gaussian Mixture Models (GMMs), which exhibited extreme fragility when subjected to multi-speaker environments, overlapping dialogue, ambient acoustic noise, and diverse regional accents. Furthermore, legacy text summarization methods were predominantly extractive, relying on simple TF-IDF matrices or graph-based ranking algorithms like TextRank to isolate and concatenate verbatim sentences. While these extractive methodologies preserved literal phrasing, they systematically failed to capture semantic syntheses, abstractive nuances, and long-range contextual dependencies across prolonged conversations. The recent emergence of self-attention mechanisms, transformer-based neural topologies, and large-scale weakly supervised audio pre-training has fundamentally redefined the performance boundaries of both acoustic modeling and generative text synthesis.
+PROBLEM STATEMENT
+Current institutional and enterprise communication channels suffer from significant operational latencies and resource drains due to the absence of automated meeting documentation architectures. The specific technical challenges include:
+High informational degradation and omission rates during manual transcription, resulting in a loss of granular project history.
+High dependencies on centralized cloud-based ASR and NLP API infrastructure, which creates prohibitive data exposure risks, compliance violations, and unsustainable transaction costs.
+Severe processing limitations in transformer architectures due to fixed token window lengths ($1024$ tokens for models like BART), causing truncation errors and semantic loss when processing extended audio streams.
+Structural failure in identifying clear target objectives, project deadlines, and assigned task owners from unformatted, conversational text.
+SYSTEM OBJECTIVES
+The comprehensive journey and operational boundaries of the proposed framework are defined by the following sequential engineering objectives:
+Audio Recording and Digital Signal Pre-processing: To ingest raw audio input streams, execute algorithmic background noise attenuation, apply amplitude normalization, and partition data strings via synchronized audio chunking frameworks.
+High-Fidelity Automated Speech-to-Text Transcription: To execute localized, end-to-end multi-lingual transcription using OpenAI Whisper, implementing an overlapping sliding window paradigm to preserve conversational contexts across boundary splits.
+Context-Aware Abstractive Text Summarization: To construct highly coherent, non-verbatim abstractive summaries via a locally deployed BART neural network, utilizing structural chunking strategies mapped exactly to sentence boundaries.
+Automated Keyword and Named Entity Extraction: To run localized semantic parsing via specialized spaCy pipelines, isolating corporate entities, specific timelines, structural resources, and key operational vocabularies.
+Deterministic Action Item Segmentation: To deploy rule-based regular expressions coupled with Named Entity Recognition maps to identify actionable directives, isolate target owners, and compute temporal deadlines.
+Responsive Full-Stack Technical Dashboard Delivery: To serve processed multi-tier JSON payloads via an asynchronous FastAPI gateway to a browser-rendered, raw CSS React interactive user interface dashboard.
+SCOPE OF THE PROJECT
+The scope of this project is bounded by the design, implementation, evaluation, and local optimization of an autonomous speech-to-intelligence desktop server framework. The system is designed to run entirely on user-controlled hardware workstations, ensuring full local processing of sensitive enterprise conversations, architectural design reviews, and academic syncs without leaking data to third-party cloud services. The target scope covers raw audio signal conditioning, high-accuracy structural transcription, linguistic parsing for semantic synthesis, and action-item tracking. The front-end scope provides clean, browser-accessible visualization tools for verification, data adjustments, and direct schema exports. This architecture intentionally avoids cloud microservices, external orchestration overheads, and multi-tenant scaling architectures, focusing instead on optimization for resource-constrained edge computing environments.
+ORGANIZATION OF THE REPORT
+This report is organized into five distinct technical chapters:
+Chapter 1: Introduction defines the baseline overview, historical background, core problem statement, system engineering objectives, and project scope.
+Chapter 2: Literature Survey compiles a detailed matrix of ten major research papers published between 2022 and 2026, breaking down their engineering methods, limitations, and direct relevance to this framework.
+Chapter 3: System Analysis and Requirements maps out the explicit functional and non-functional requirements alongside the target hardware and software specifications.
+Chapter 4: System Architecture and Implementation Plan details the pipeline flow diagrams, module breakdowns, development phases, and structural milestones.
+Chapter 5: References compiles the academic citations used to ground this report.
+CHAPTER 2
+LITERATURE SURVEY
+LITERATURE REVIEW MATRIX
+The foundational engineering paradigms, baseline algorithms, and algorithmic milestones relevant to automated meeting intelligence are systematically analyzed in the table below.
+Table 2.1: Literature Review Matrix
+ANALYSIS OF EXISTING SYSTEMS
+Existing institutional systems for compiling conversational intelligence broadly fall into two main categories: manual governance methods and commercial cloud-dependent integrations. Manual minutes-of-meetings compilation remains the dominant institutional practice across educational setups and standard engineering offices. This methodology relies on a designated secretary who takes real-time long-form or shorthand notes, filters conversation threads based on personal discretion, and structures them into administrative summaries after the event. Human cognitive bottlenecks, subjective filters, high processing times, and systemic tracking omissions limit this approach during rapid, multi-speaker technical debates.
+Commercial cloud ecosystems (such as Otter.ai, Fireflies.ai, and Microsoft Teams Intelligent Recap) utilize proprietary, highly distributed web APIs to capture and process conversational audio. These systems connect to remote servers to stream input audio data, run cloud-based speech-to-text decoding, and use massive language model layers to extract summary maps. While these platforms achieve high contextual accuracy, their architectural design introduces several challenges for security-conscious configurations:
+Data Sovereignty Risks: Relaying raw internal acoustic data over external channels to remote third-party host environments creates severe security vectors, running counter to corporate compliance mandates and local data protection regulations.
+Unsustainable Transaction Overhead: Operating via proprietary pay-per-minute API billing logic results in unpredictable scaling fees that increase with usage frequency across large developer teams.
+Network Constraints: High dependence on continuous external internet bandwidth creates single-point-of-failure risks. Network dropouts can cause packet loss, which compromises entire transcription sequences.
+IDENTIFIED TECHNICAL GAPS
+A detailed review of contemporary systems highlights several unresolved architectural gaps:
+Boundary Truncation Failure: Standard context slicing methods often cut audio tracks into exact time segments (e.g., rigid 30-second blocks). This introduces truncation errors at the boundaries, splitting phonemes or sentences mid-syllable and breaking context for downstream transformer processing.
+Context Window Truncation: Lightweight summarization networks (like standard BART configurations) are bound by rigid input token limits ($1024$ tokens). When long, multi-hour transcripts are fed into these models directly, they truncate large parts of the text, causing severe information loss.
+Action-Item Disconnection: Most open-source language models frequently miss direct connections between project tasks and their assignees, generating general task descriptions without resolving the exact target entity responsible for execution.
+CHAPTER 3
+SYSTEM ANALYSIS AND REQUIREMENTS
+FUNCTIONAL REQUIREMENTS
+The proposed framework must support the following core functional capabilities:
+Audio Stream Ingestion and Pre-processing: The system must accept standard multi-format file uploads (.mp3, .wav, .m4a) and automatically transform them into unified single-channel, $16,000\text{ Hz}$ linear pulse-code modulation (PCM) byte sequences.
+Continuous Non-Lossy Transcription: The acoustic decoding engine must execute multi-turn speaker transcription locally, applying an overlapping temporal window buffer to prevent sentence-boundary context fragmentation.
+Abstractive Text Compilation: The NLP layer must compress the resulting transcript into short, non-verbatim paragraphs while preserving the core technical context and decisions.
+Linguistic Attribute Tracking: The system must extract named entities (PERSON, ORGANIZATION, DATE), building a frequency distribution of technical keywords.
+Deterministic Directive Extraction: The tracking parser must isolate task phrases, match them to explicit owners, and calculate target deadlines.
+Asynchronous Web Payload Delivery: The application server must expose REST endpoints to accept large form data, manage processing jobs without blocking connections, and return structured JSON schemas to the frontend dashboard.
+NON-FUNCTIONAL REQUIREMENTS
+The system must meet the following performance and design criteria:
+Data Privacy & Local Execution: All operations, from audio decoding to generative text summarization, must execute locally on the host workstation. The system must run without external network traffic, ensuring data sovereignty.
+Deterministic Consistency: The downstream parsing pipelines must handle data formats predictably. Given identical text inputs, the rule-based regular expressions must extract action items consistently without semantic variations.
+Interface Responsiveness: The presentation panel must remain highly responsive, rendering large text outputs and tables with negligible lag.
+Resource Boundary Maintenance: The backend models must manage system memory efficiently, ensuring model parameters load within host VRAM limits without throwing out-of-memory errors.
+HARDWARE REQUIREMENTS
+Processor Configuration: AMD Ryzen 5 or Intel Core i5 multi-core processor (minimum 6 cores, 3.5 GHz clock speed or higher).
+System Memory Capacity: Minimum 16 GB DDR4/DDR5 dual-channel RAM to support concurrent model loading.
+Graphics Processing Engine: NVIDIA Dedicated GPU with CUDA support (e.g., RTX 3060 or better) and minimum 6 GB dedicated VRAM for accelerated local model inference.
+Storage Architecture: 512 GB PCIe NVMe M.2 Solid State Drive (SSD) with read speeds >= 3000\text MB/s to handle large audio file operations.
+SOFTWARE REQUIREMENTS
+Host Operating System: Microsoft Windows 11 Pro 64-bit or Ubuntu Linux 22.04 LTS.
+Development Platform Language: Python 3.10.x runtime environment.
+Acoustic Signal Processing Toolkit: FFmpeg binary engine integrated via the pydub wrapper interface.
+ASR Core Deep Learning Network: openai-whisper package (local execution configuration).
+Linguistic Framework Infrastructure: Hugging Face transformers (BART toolkit) and spaCy NLP engine (en_core_web_sm layout model).
+Backend Framework Services: FastAPI runtime layer driven by Uvicorn asynchronous workers.
+Client UI Environment: React 18 single-page architecture built using the Vite bundling pipeline.
+CHAPTER 4
+SYSTEM ARCHITECTURE AND IMPLEMENTATION PLAN
+SYSTEM ARCHITECTURE PIPELINE
+The design of the system architecture follows a clean, single-direction pipeline that moves from raw acoustic input to structured web visualization. This architecture is designed to handle long-running execution sequences locally without routing data through external cloud dependencies.
+The pipeline consists of five key structural phases:
+Acoustic Signal Conditioning: Ingests variable media formats (.mp3, .wav) and runs them through pydub and ffmpeg to filter out background noise, adjust gain levels, and normalize audio to a single-channel, $16,000\text{ Hz}$ frequency stream.
+Continuous Speech Decoding: Feeds the normalized byte stream into a localized OpenAI Whisper network. The system uses a 30-second sliding step window combined with a 2-second chronological overlap buffer to preserve word boundaries and sentence context at chunk boundaries.
+Parallel NLP Processing: Routes the generated text into two parallel processing paths. The first path manages text summarization, using a BART-large-cnn transformer bounded by strict 900-token chunk limits to prevent context overflow errors. The second path runs a specialized spaCy pipeline to extract named entities and profile domain-specific technical vocabularies.
+Deterministic Action Parsing: Combines regex patterns with named entity recognition maps to scan the text for operational tasks, connect them with targeted owners, and parse explicit date strings to generate verified action items.
+Asynchronous Interface Gateway: Packages the processed data structures into validated JSON schemas, which are served via a FastAPI instance to a plain CSS React dashboard.
+MODULE SPECIFICATIONS
+The operational responsibilities and target framework dependencies across the modules are outlined in the table below.
+Table 4.1: Module-Wise Frameworks and Deliverable Objectives
+PHASE-WISE DEVELOPMENT PLAN
+The engineering roadmap for the project is divided into five execution phases to ensure systematic development and thorough testing of each system layer:
+Phase 1: Acoustic Pipeline and Token Boundaries: Focuses on setting up local ffmpeg environments, configuring audio normalization parameters, and engineering the sliding-window chunking rules for the acoustic transcription models.
+Phase 2: Transformer Model Caching and Summarization: Sets up local cache routes for Hugging Face transformer models to allow fully offline initialization. This phase also configures length-bounding logic for the BART-large-cnn pipeline to ensure accurate abstractive summaries without context truncation.
+Phase 3: Linguistic Extraction and Task Parsing: Deploys internal spaCy tokenizers to categorize named entities (PERSON, ORG, DATE). It combines these entity extractions with custom regex sequences to build an deterministic parsing engine that isolates tasks, owners, and deadlines from the raw text.
+Phase 4: Async API Engineering and Schema Design: Builds the communication backbone using FastAPI and Pydantic schema models. It configures asynchronous request handlers to manage large media payloads efficiently without causing system timeouts.
+Phase 5: User Interface Assembly and Metric Evaluation: Constructs a single-page React frontend styled entirely with custom plain CSS for rapid, low-overhead rendering. This phase concludes with evaluation testing to profile system performance and benchmark text summary accuracy using local ROUGE metrics.
+IMPLEMENTATION TIMELINE AND MILESTONES
+The sequential timeline and development schedule across the 8-week engineering lifecycle are detailed in the table below.
+Table 4.2: Implementation Timeline and Schedule
+CHAPTER 5
+REFERENCES
+Radford, A., Kim, J. W., Xu, T., Brockman, G., McLeavey, C., & Sutskever, I. (2022). Robust speech recognition via large-scale weak supervision. arXiv preprint arXiv:2212.04356.
+FitzGerald, J., Heniwala, S., Ma, M., & Rastrow, A. (2022). Alexa Teacher Model: Pretraining and distilling multi-billion-parameter LLMs for conversational AI applications. Proceedings of the IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 4321-4325.
+Hu, Y., Chen, Y., & Liu, F. (2023). MeetingBank: A benchmark dataset for multi-domain meeting summarization and evaluation. Transactions of the Association for Computational Linguistics, 11, 142-158.
+Zhao, L., Zhang, H., & Xu, W. (2023). Abstractive meeting summarization via hierarchical adaptive segmentation. In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics, 8912-8924.
+Vinnikov, I., Ryabinin, M., & Shabanov, A. (2024). NOTSOFAR-1 challenge: Target speaker overlap-free meeting recognition using distributed microphone arrays. IEEE Signal Processing Letters, 31, 561-565.
+Wang, J., Line, S., & Robert, T. (2024). Automatic meeting summarization and topic segmentation using multi-task neural architectures. Journal of Artificial Intelligence Research, 79, 1105-1129.
+Chen, X., Kim, D., & Srinivasan, S. (2024). Speaker diarization with region proposal networks on multi-channel audio sequences. IEEE Transactions on Audio, Speech, and Language Processing, 32, 1245-1258.
+Kumar, P., Sharma, R., & Varsha, K. (2025). Action item detection in meeting transcripts using localized large language models. International Journal of Computer Science and Engineering, 13(2), 88-97.
+Li, M., Wang, Y., & Chang, H. (2025). Multimodal meeting summarization with dense audio-text alignment constraints. IEEE Signal Processing Magazine, 42(3), 45-54.
+Park, S., Lee, J., & Kim, H. (2026). Real-time incremental meeting transcription and summarization over resource-constrained local edge nodes. Computational Linguistics Review, 34(1), 12-29.
+Sl. No | Paper Title | Authors | Methodology Applied | Shortcomings Identified | Project Integration
+1 | Robust Speech Recognition via Large Scale Weak Supervision | Radford et al. (OpenAI) [2022] | Large-scale weak supervision on 680,000 hours of multi-lingual audio | High computational latency on edge devices without specialized VRAM. | Base acoustic layer for zero-cloud multi-lingual audio transcription.
+2 | Alexa Teacher Model: Pretraining and Distilling Multi-Billion LLMs | FitzGerald et al. [2022] | Sequence-to-sequence multi-billion parameter LLM distillation for task compression. | Propensity for structural hallucination under compressed contexts | Structural input token boundary management rule definitions.
+3 | MeetingBank: A Benchmark Dataset for Meeting Summarization | Hu et al. [2023] | Benchmark dataset synthesis using municipal council meeting transcripts. | Extractive nature of baseline models limits abstractive paraphrasing bounds | Evaluation metric baseline profiling using localized ROUGE scoring.
+4 | Abstractive Meeting Summarization via Hierarchical Adaptive Segmentation | Zhao et al. [2023] | Hierarchical adaptive segmentation using local attention maps | Context fragmentation across multi-turn dialogue segments. | Dynamic sliding window chunking sequence logic design.
+5 | NOTSOFAR-1 Challenge: Target Speaker Overlap-Free Meeting Recognition | Vinnikov et al. [2024] | Target speaker overlap-free meeting recognition systems benchmarks. | Degradation in high reverberation zones and distant mic captures. | Multi-channel audio normalization and preprocessing baseline protocols.
+6 | Automatic Meeting Summarization and Topic Segmentation | Wang et al. [2024] | Multi-task training for alignment of semantic chunks. | Increased sequence processing costs during runtime. | Parallel parsing of semantic tokens and topic boundaries.
+7 | Speaker Diarization with Region Proposal Network | Chen et al. [2024] | Region Proposal Network (RPN) for audio bounding. | Complex hyper-parameter tuning for rapid turn-takes | Acoustic footprint segmentation across localized streams.
+8 | Action Item Detection in Meeting Transcripts using LLM | Kumar et al. [2025] | Prompt engineering on proprietary API large language model | Complete dependency on external cloud gateways and keys. | Deterministic rule structures bound to local spaCy models.
+9 | Multimodal Meeting Summarization with Audio-Text Alignment | Li et al. [2025] | Cross-attention alignment matrices for multi-modal loss | Excessive memory utilization during encoding cycles. | Textual timestamp indexing structural logic deployment.
+10 | Real-Time Incremental Meeting Transcription and Summarization | Park et al. [2026] | Sliding window token tracking for real-time compilation. | Boundary truncation causes semantic information leakage | Sentence-boundary validation rules for context tracking.
+Module ID | Target Technical Stack | Expected Deliverable Objective
+Module 1 | pydub / ffmpeg binaries | Ingest media files, apply audio normalization, and output clean monaural byte arrays.
+Module 2 | openai-whisper (local) | Run localized continuous acoustic decoding with 2-second overlap boundaries.
+Module 3 | transformers / BART | Execute abstractive compilation within strict 900-token limit windows.
+Module 4 & 5 | spaCy / Custom Regex Sequential Arrays | Extract named entities, map word frequencies, and match tasks to explicit owners and deadlines.
+Module 6 & 7 | FastAPI / React Vite Plain CSS Architecture | Serve validated JSON data via async endpoints to a fast, responsive web interface panel.
+Milestone Phase | Schedule Bounds | Core Target Engineering Focus
+Phase 1 | Weeks 1 - 2 | Building audio processing mechanics and Whisper window tracking setups.
+Phase 2 | Week 3 | Local model optimization and abstract summary text tuning.
+Phase 3 | Week 4 | Deploying spaCy extraction rules and regex task parsers.
+Phase 4 | Week 5 | Building FastAPI routers and defining structured JSON schemas.
+Phase 5 | Week 6 | Designing a clean, responsive React UI using raw CSS styling.
+Phase 6 | Week 7 | End-to-end integration and system performance profiling.
+Phase 7 | Week 8 | Compiling documentation, final report generation, and review prep.
+
+
+=========================================
+FILE: AI_Meeting_Assistant_0th_Review.pptx
+=========================================
+
+--- Slide 1 ---
+PROJECT PHASE 1
+REVIEW 0
+
+
+
+
+Presented By:  
+Name (1SP23IS0xx)
+
+
+
+
+Under the Guidence of:
+Prof.
+
+
+
+
+	S.E.A. COLLEGE OF ENGINEERING & TECHNOLOGY
+	(Affiliated to Visvesvaraya Technological University, Belgaum)
+--- Slide 2 ---
+01
+AI-Powered Meeting Assistant
+Speech-to-Intelligence
+ABSTRACT
+What This Does
+Automates spoken dialogue → structured docs
+Whisper STT + BART abstractive summarizer
+Outputs notes, speakers, action items
+INTRODUCTION
+Why It Matters
+Critical info lost in translation after meetings
+Manual note-taking distracts from participation
+Transforms passive audio into active data
+PROBLEM STATEMENT
+Key Pain Points
+Information overload: hour-long recordings
+Human error: missed deadlines & tasks
+Unstructured audio — not searchable/indexable
+--- Slide 3 ---
+02
+System Design & Objectives
+Literature · Architecture · Metrics
+LITERATURE SURVEY
+Prior Work & Foundations
+Whisper (OpenAI, 2022)
+Transformer STT robust to accents & noise
+BART (Lewis et al.)
+Abstractive summarization via paraphrasing
+Speaker Diarization
+E2E models for Who-Spoke-When detection
+OBJECTIVES
+Accuracy  High transcription precision in multi-speaker environments
+Efficiency  Summaries within 20% of total meeting duration
+Utility  Action items with clear owner + deadline
+PROPOSED SYSTEM ARCHITECTURE
+End-to-End Pipeline
+01
+Input Layer
+Audio ingestion & noise cancellation pre-processing
+▼
+02
+Transcription Engine
+Whisper API/Model → Speech-to-Text
+▼
+03
+NLP Processor
+BART/T5 Summarizer + NER keyword extraction
+▼
+04
+Output Layer
+Web dashboard: Summary · Action Items · Transcript
+0th Review  •  Final Year Project
+
+
+=========================================
+FILE: AI_Meeting_Assistant_Full_Deck.pptx
+=========================================
+
+--- Slide 1 ---
+PROJECT PHASE 1
+REVIEW 0
+
+
+
+
+Presented By:  
+Name (1SP23IS0xx)
+
+
+
+
+Under the Guidence of:
+Prof.
+
+
+
+
+	S.E.A. COLLEGE OF ENGINEERING & TECHNOLOGY
+	(Affiliated to Visvesvaraya Technological University, Belgaum)
+--- Slide 2 ---
+AI-Powered
+Meeting Assistant
+Speech  →  Transcript  →  Summary  →  Action Items
+--- Slide 3 ---
+02
+Abstract
+PROJECT OVERVIEW AT A GLANCE
+An end-to-end NLP system that records meeting audio, transcribes it using Whisper, and generates concise summaries with key action items using BART — eliminating manual note-taking.
+GOAL
+Automate the full journey from spoken dialogue to structured, actionable documentation — reducing cognitive load on participants.
+PROCESS
+Audio ingestion → Whisper STT → Raw transcript → BART abstractive summarization → Keyword & action item extraction.
+OUTCOME
+A web dashboard delivering: clean transcript, bullet-point notes, one-paragraph summary, and tagged action items with owners.
+--- Slide 4 ---
+03
+Introduction
+SETTING THE CONTEXT
+31M+
+meetings happen every day in the US alone
+Organizations spend an average of 23 hours per week in meetings — yet over 60% of action items discussed are never recorded.
+Manual note-taking splits attention, forcing participants to choose between listening and writing — degrading both.
+State-of-the-art transformer models (Whisper, BART) have matured to a point where accurate automated transcription and summarization is now feasible in real-world conditions.
+WITHOUT THIS SYSTEM
+Hour-long recordings nobody re-listens to
+Critical decisions lost after meeting ends
+No searchable record of discussions
+Action items forgotten or duplicated
+WITH THIS SYSTEM
+Auto-generated transcript within minutes
+Structured summary with bullet key points
+Searchable, indexed meeting records
+Action items tagged with owner + deadline
+--- Slide 5 ---
+04
+Problem Statement
+CHALLENGES WE ARE SOLVING
+01
+Information Overload
+Reviewing hour-long recordings is time-prohibitive. Professionals lose an average of 4.8 hours per week just re-listening to meetings for follow-ups.
+02
+Human Error in Note-Taking
+Important deadlines, decisions, and tasks are frequently missed or misattributed in manual notes. Memory degrades within 24 hours of a meeting.
+03
+Unstructured, Unsearchable Data
+Audio files cannot be indexed, searched, or referenced in project trackers. Critical institutional knowledge is locked in .mp3 files.
+04
+Cognitive Burden on Participants
+Simultaneous listening and note-taking reduces comprehension by up to 40%. Attendees cannot fully engage when they are also the scribe.
+--- Slide 6 ---
+05
+Literature Survey
+RESEARCH FOUNDATIONS
+01
+Speech-to-Text Systems Using Transformers
+Radford et al. (OpenAI, 2022)
+Whisper — a transformer-based STT model trained on 680,000 hrs of multilingual audio — achieves near-human accuracy on diverse accents, noise conditions, and domain vocabularies without fine-tuning.
+OUR USE
+Directly used as the transcription backbone of our system.
+02
+Abstractive Text Summarization using Seq2Seq
+Lewis et al. — BART (Facebook AI, 2019)
+BART combines bidirectional encoder (like BERT) with autoregressive decoder (like GPT), enabling abstractive summarization that paraphrases content rather than merely extracting sentences — producing more natural output.
+OUR USE
+Chosen over extractive methods for more coherent, human-like summaries.
+03
+Speaker Diarization: End-to-End Approaches
+Bredin et al. — pyannote.audio (2020)
+E2E neural diarization models outperform classical clustering approaches for Who-Spoke-When detection, enabling multi-speaker transcript labelling with minimal speaker enrollment data.
+OUR USE
+Identifies individual speakers in meeting transcripts for attribution.
+--- Slide 7 ---
+06
+Proposed System & Architecture
+END-TO-END PIPELINE DESIGN
+01
+Input Layer
+Audio file upload (.mp3 / .wav)
+Noise reduction pre-processing
+▶
+02
+Transcription Engine
+Whisper model (base / medium)
+Speech → Raw text transcript
+▶
+03
+NLP Processor
+BART abstractive summarizer
+spaCy NER → keywords & entities
+▶
+04
+Action Item Extractor
+Rule-based + NER tagging
+Owner + deadline detection
+▶
+05
+Output Dashboard
+Web UI: Transcript · Summary
+Action Items · Keyword Cloud
+Python / FastAPI   •   HuggingFace Transformers   •   OpenAI Whisper   •   spaCy NER   •   React Dashboard
+--- Slide 8 ---
+07
+Objectives
+WHAT WE AIM TO ACHIEVE
+01
+≥ 90% WER
+High Transcription Accuracy
+Achieve word error rate below 10% across diverse accents and multi-speaker meeting conditions using Whisper (medium/large model).
+02
+< 20% of duration
+Fast Summarization
+Generate a complete meeting summary in under 20% of the total meeting length — a 60-min meeting summarized in under 12 minutes.
+03
+Owner + Deadline
+Actionable Output
+Successfully categorize action items with a clear owner and deadline for ≥ 80% of explicitly discussed tasks.
+04
+≥ 2 speakers
+Multi-Speaker Support
+Accurately identify and label at least 2 distinct speakers in a meeting using diarization, attributing statements correctly.
+05
+ROUGE-L ≥ 0.35
+Measurable Summary Quality
+Evaluate summary quality against human-written reference notes using ROUGE-1, ROUGE-2, and ROUGE-L metrics on a test set.
+06
+Single-click upload
+Usable Web Interface
+Deliver a clean dashboard where a user uploads audio and receives transcript + summary + action items within one interface session.
+
+
+=========================================
+FILE: review0 (1).pptx
+=========================================
+
+--- Slide 1 ---
+A Project Phase-1 Review-0 Presentation
+“AI-Powered Meeting Assistant”
+
+Presented  By:-
+
+Under The Guidance of:-
+
+
+
+Department of Information Science & Engineering
+S.E.A. COLLEGE OF ENGINEERING & TECHNOLOGY
+(Affiliated to Visvesvaraya Technological University, Belagavi)
+--- Slide 2 ---
+Abstract
+This project presents an AI-powered meeting assistant that converts spoken audio into structured text. 
+It automatically generates transcripts, summaries, and key action points from meetings. 
+The system reduces manual note-taking and improves productivity. 
+It helps users quickly review and understand meeting discussions. 
+The output is presented in a simple and user-friendly interface.
+--- Slide 3 ---
+Introduction
+Meetings are a core part of organizational workflow, yet most action items go unrecorded.
+Around 23 hours per week are spent in meetings on average per professional.
+Manual note-taking forces participants to split attention between listening and writing.
+Over 60% of decisions discussed in meetings are forgotten within 24 hours.
+Existing solutions are either expensive, cloud-dependent, or lack summarization.
+Transformer-based models like Whisper and BART have made automated processing feasible.
+This system aims to convert passive audio into active, structured documentation.
+--- Slide 4 ---
+Problem Statement
+Meetings are a core part of organizational workflow, yet most action items go unrecorded.
+Around 23 hours per week are spent in meetings on average per professional.
+Manual note-taking forces participants to split attention between listening and writing.
+Over 60% of decisions discussed in meetings are forgotten within 24 hours.
+Existing solutions are either expensive, cloud-dependent, or lack summarization.
+Transformer-based models like Whisper and BART have made automated processing feasible.
+This system aims to convert passive audio into active, structured documentation.
+--- Slide 5 ---
+Literature Survey
+--- Slide 6 ---
+Literature Survey
+--- Slide 7 ---
+Proposed System
+Combines Speech-to-Text with Natural Language Processing for end-to-end meeting intelligence.
+Audio input is pre-processed with noise reduction before transcription.
+OpenAI Whisper (base/medium model) converts speech to raw text transcript.
+Transcript is chunked intelligently to handle long meetings beyond model context limits.
+BART performs abstractive summarization — generating new sentences, not just extracting them.
+spaCy NER extracts keywords, names, dates, and project identifiers from the transcript.
+A rule-based layer detects action items with owner names and deadlines.
+pyannote.audio performs speaker diarization — labelling each line with the speaker identity.
+--- Slide 8 ---
+Objectives
+To develop a system that converts meeting audio into text using speech recognition techniques. 
+To implement text summarization to generate concise meeting summaries from transcripts. 
+To extract important information such as names, dates, and discussion topics from the meeting. 
+To identify and detect action items, responsibilities, and deadlines from conversations. 
+To handle multi-speaker audio and differentiate between speakers. 
+To design a web-based interface that displays transcript, summary, and extracted insights. 
+To ensure efficient processing of meeting data and quick result generation.
+
+
+=========================================
+FILE: review0.pptx
+=========================================
+
+--- Slide 1 ---
+A Project Phase-1 Review-2 Presentation
+“AI-Powered Meeting Assistant”
+
+Presented  By:-
+Tejashwini V     (1SP23IS057)
+Varsha C P        (1SP23IS060)
+Varshitha A       (1SP23IS061)
+
+Under The Guidance of:-
+Gayathri N(Assistant professor)
+
+
+
+Department of Information Science & Engineering
+S.E.A. COLLEGE OF ENGINEERING & TECHNOLOGY
+(Affiliated to Visvesvaraya Technological University, Belagavi)
+--- Slide 2 ---
+Abstract
+Meetings generate large volumes of spoken data that is difficult to retain and act upon.
+This project proposes an AI-powered meeting assistant that automates note generation.
+OpenAI Whisper is used for high-accuracy speech-to-text transcription.
+BART (Facebook AI) performs abstractive summarization of the transcript.
+The system extracts keywords and named entities using spaCy NER.
+Speaker diarization identifies who spoke when using pyannote.audio.
+Output is delivered through a web dashboard showing transcript, summary, and action items.
+Reduces cognitive load on participants and ensures no critical information is lost.
+--- Slide 3 ---
+Introduction
+Meetings are a core part of organizational workflow, yet most action items go unrecorded.
+Around 23 hours per week are spent in meetings on average per professional.
+Manual note-taking forces participants to split attention between listening and writing.
+Over 60% of decisions discussed in meetings are forgotten within 24 hours.
+Existing solutions are either expensive, cloud-dependent, or lack summarization.
+Transformer-based models like Whisper and BART have made automated processing feasible.
+This system aims to convert passive audio into active, structured documentation.
+--- Slide 4 ---
+Literature Survey
+--- Slide 5 ---
+Literature Survey
+--- Slide 6 ---
+Proposed System
+Combines Speech-to-Text with Natural Language Processing for end-to-end meeting intelligence.
+Audio input is pre-processed with noise reduction before transcription.
+OpenAI Whisper (base/medium model) converts speech to raw text transcript.
+Transcript is chunked intelligently to handle long meetings beyond model context limits.
+BART performs abstractive summarization — generating new sentences, not just extracting them.
+spaCy NER extracts keywords, names, dates, and project identifiers from the transcript.
+A rule-based layer detects action items with owner names and deadlines.
+pyannote.audio performs speaker diarization — labelling each line with the speaker identity.
+--- Slide 7 ---
+Objectives
+High-Accuracy Transcription
+To transcribe meeting audio with a Word Error Rate (WER) below 10%
+Handles diverse accents and multi-speaker environments using Whisper
+ Automated Abstractive Summarization
+To generate a concise meeting summary in under 20% of the total meeting duration
+Uses BART to paraphrase content — not just extract sentences
+Action Item Extraction
+To detect and categorize action items with a clear owner and deadline
+Targets ≥ 80% coverage of explicitly discussed tasks
+Speaker Diarization
+To identify and label at least 2 distinct speakers in a meeting recording
+Attributes each statement to the correct participant
+Keyword & Entity Extraction
+To extract project names, dates, people, and decisions from the transcript
+Uses spaCy NER for fast, accurate identification
+Usable Web Interface
+To deliver all outputs — transcript, summary, keywords, action items — in a single dashboard
+
+
+=========================================
+FILE: second review.pptx
+=========================================
+
+--- Slide 1 ---
+A Project Phase-2 Review-2 Presentation
+“AI-Powered Counterfeit Product Detection using Blockchain”
+
+Presented  By:-
+Sneha.S.B		(1SP23IS050)
+Abhishek.P.I	(1SP23IS001)
+Diganth		(1SP23IS011)
+Pracheth		(1SP23IS033)
+
+Under The Guidance of:-
+D. Aruna
+
+
+Department of Information Science & Engineering
+S.E.A. COLLEGE OF ENGINEERING & TECHNOLOGY
+(Affiliated to Visvesvaraya Technological University, Belagavi)
+--- Slide 2 ---
+Abstract
+People worldwide are at risk of buying counterfeit products due to lack of verification. 
+Blockchain technology provides a reliable solution by building trust between parties. 
+Manufacturers store authentic product serial numbers in a distributed ledger.
+ Customers can verify products before purchase, reducing fraud risk. 
+Blockchain ensures data integrity and tamper-proof transactions. 
+Use of smart contracts (Ethereum) automates verification securely. 
+Reduces dependency on intermediaries and increases system efficiency. 
+Enhances customer confidence in product authenticity.
+--- Slide 3 ---
+Introduction
+Fake products are a major global problem affecting safety and trust. 
+They look like real items but are low quality and cheaper. 
+It is difficult to identify genuine products.
+ Around 3.3% of global trade involves counterfeit goods.
+ Many people unknowingly buy fake products, reducing trust.
+ Existing methods are not fully effective in stopping fakes. 
+Blockchain technology provides a secure way to verify products.
+--- Slide 4 ---
+Literature Survey
+--- Slide 5 ---
+Literature Survey
+--- Slide 6 ---
+Proposed System
+Combines AI analysis with blockchain technology
+Ensures automation, transparency, and decentralization
+Uses AI for image/product verification and anomaly detection
+AI analyzes features like image sharpness, color, resolution, and brightness
+Helps in detecting fake or tampered products visually
+Blockchain acts as a secure digital registry for transactions
+Stores product provenance, tracking, and verification data
+Data stored in blocks with unique cryptographic hashes
+Eliminates centralized storage → improves security
+Uses unique serial numbers from manufacturers
+Prevents duplication or reuse of product identities
+Enables real-time verification by customers
+Involves all supply chain stakeholders
+Effectively reduces counterfeit product sales
+--- Slide 7 ---
+Objectives
+1. Decentralized Product Registration
+To allow manufacturers to store product details and serial numbers on blockchain 
+Ensures data is secure, permanent, and tamper-proof 
+
+2. Product Authentication System
+To enable customers to verify product authenticity before purchase 
+Reduces chances of buying counterfeit products
+
+3. Smart Contract Automation
+To automate verification using Ethereum smart contracts 
+Eliminates need for intermediaries and manual checking 
+
+4. Supply Chain Transparency
+To track product movement from manufacturer → seller → customer 
+Provides complete visibility and traceability
+
+5. Secure and Tamper-Proof Data Storage
+To ensure all transactions are immutable (cannot be changed) 
+Prevents fraud and data manipulation 
+
+6. Reduce Counterfeit Products
+To minimize fake products in the market 
+Improve consumer trust and brand reliability

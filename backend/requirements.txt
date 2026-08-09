@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+openai-whisper
+faster-whisper
+huggingface_hub
+transformers
+spacy
+torch
+torchaudio
+torchvision
