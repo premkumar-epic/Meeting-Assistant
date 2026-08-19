@@ -19,7 +19,7 @@ def _get_summarizer_pipeline(model_name: str) -> dict[str, Any]:
             os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
             
             tokenizer = AutoTokenizer.from_pretrained(model_name)
-            summ_pipe = pipeline("summarization", model=model_name, tokenizer=tokenizer)
+            summ_pipe = pipeline(model=model_name, tokenizer=tokenizer)
             _SUMMARIZER_CACHE[model_name] = {
                 "pipeline": summ_pipe,
                 "tokenizer": tokenizer,
