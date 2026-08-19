@@ -13,15 +13,16 @@ def _get_summarizer_pipeline(model_name: str) -> dict[str, Any]:
     """Load and cache the Hugging Face summarization pipeline and tokenizer."""
     with _SUMMARIZER_LOCK:
         if model_name not in _SUMMARIZER_CACHE:
-            from transformers import pipeline, AutoTokenizer
+            from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
             
             # Suppress symlink warnings in offline environments if necessary
             os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
             
             tokenizer = AutoTokenizer.from_pretrained(model_name)
-            summ_pipe = pipeline("text-generation", model=model_name, tokenizer=tokenizer)
+            model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
             _SUMMARIZER_CACHE[model_name] = {
-                "pipeline": summ_pipe,
+                "pipeline": None,
+                "model": model,
                 "tokenizer": tokenizer,
             }
         return _SUMMARIZER_CACHE[model_name]
@@ -75,13 +76,14 @@ def summarize_text(
             return cleaned_text
 
         try:
-            res = summarizer(
-                cleaned_text,
+            inputs = tokenizer(cleaned_text, return_tensors="pt", max_length=1024, truncation=True)
+            summary_ids = bundle["model"].generate(
+                inputs["input_ids"],
                 min_length=adjusted_min_length,
                 max_length=adjusted_max_length,
                 do_sample=False,
             )
-            return str(res[0]["summary_text"]).strip()
+            return str(tokenizer.decode(summary_ids[0], skip_special_tokens=True)).strip()
         except Exception as exc:
             # Fallback if summarization fails
             raise RuntimeError(f"Summarization failed for single chunk: {exc}") from exc
@@ -103,8 +105,14 @@ def summarize_text(
         adj_min = min(30, max(10, adj_max // 3))
         
         try:
-            res = summarizer(chunk, min_length=adj_min, max_length=adj_max, do_sample=False)
-            chunk_summaries.append(str(res[0]["summary_text"]).strip())
+            inputs = tokenizer(chunk, return_tensors="pt", max_length=1024, truncation=True)
+            summary_ids = bundle["model"].generate(
+                inputs["input_ids"],
+                min_length=adj_min,
+                max_length=adj_max,
+                do_sample=False,
+            )
+            chunk_summaries.append(str(tokenizer.decode(summary_ids[0], skip_special_tokens=True)).strip())
         except Exception as exc:
             # If a specific chunk fails, fallback to keeping the original chunk's head text
             # to prevent entire pipeline failure (zero silent failures but high robustness)
