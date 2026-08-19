@@ -19,7 +19,8 @@ def _get_nlp() -> spacy.Language:
             except OSError:
                 # Fallback in case the model is not linked
                 import subprocess
-                subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"], check=True)
+                import sys
+                subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"], check=True)
                 _NLP = spacy.load("en_core_web_sm")
     return _NLP
 
