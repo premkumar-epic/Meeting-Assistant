@@ -47,7 +47,7 @@ function App() {
   const loadMeetings = async () => {
     try {
       const data = await fetchMeetingsList();
-      setMeetings(data.meetings || []);
+      setMeetings(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load meetings:', err);
     }
