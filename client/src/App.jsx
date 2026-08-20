@@ -210,7 +210,7 @@ function App() {
       startPolling(data.job_id, {
         onSuccess: (result) => {
           loadMeetings();
-          setSelectedMeetingId(result.meeting_id);
+          setSelectedMeetingId(result.id);
         },
         onError: (err) => {
           alert(`Error processing meeting: ${err.message}`);
